@@ -21,7 +21,7 @@ export default function AdminPanel() {
     const { data } = await supabase
       .from('products')
       .select('*')
-      .order('created_at', { ascending: false });
+      .order('id', { ascending: true });
 
     if (data) setProducts(data);
   };

@@ -26,7 +26,8 @@ export default function YutGame() {
     const { data: prods } = await supabase
       .from('products')
       .select('*')
-      .eq('is_active', true);
+      .eq('is_active', true)
+      .order('id', { ascending: true });
 
     if (spaces) {
       // 처음 5칸 (position 0-4)을 'empty'로 설정
@@ -60,17 +61,11 @@ export default function YutGame() {
   };
 
   const handleSelectProduct = () => {
-    const currentSpace = boardSpaces[playerPosition];
-    if (currentSpace && currentSpace.type === 'product') {
-      const product = products.find(p =>
-        boardSpaces.filter(s => s.type === 'product').indexOf(currentSpace) < products.length
-      );
-
-      if (product) {
-        setSelectedProduct(product);
-        setGameCompleted(true);
-        setCanSelect(false);
-      }
+    const { product } = getProductForSpace(boardSpaces[playerPosition]);
+    if (product) {
+      setSelectedProduct(product);
+      setGameCompleted(true);
+      setCanSelect(false);
     }
   };
 
@@ -85,7 +80,7 @@ export default function YutGame() {
     if (space.type !== 'product') return { product: null, index: null };
     const productSpaces = boardSpaces.filter(s => s.type === 'product');
     const index = productSpaces.findIndex(s => s.position === space.position);
-    const productIndex = Math.floor(index / 4);
+    const productIndex = index % products.length;
     return { product: products[productIndex] || null, index: productIndex };
   };
 
